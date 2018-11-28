@@ -1,16 +1,23 @@
-//var car = new Microsoft.Maps.Pushpin(map.getCenter(), {htmlcontent:"<img src='https://images.sendyit.com/web_platform/vendor_type/top/2.svg' style="height:2%"/>"})
 function sleep(ms){
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 async function addPins(arrayLocations, mapItem){
+    
     var linePath = [];
     for (var [indx, val] of arrayLocations.entries()){
-        mapItem.entities.push(new Microsoft.Maps.Pushpin(val,{icon:'https://images.sendyit.com/web_platform/vendor_type/top/2.svg', anchor: new Microsoft.Maps.Point(val)}));
+        var pushpinCurrent = new Microsoft.Maps.Pushpin(val,{visible:false});
         linePath.push(val);
         if(linePath.length>1){
+            pushpinCurrent.setLocation(val);
+            pushpinCurrent.setOptions({visible:true/*,{icon: 'https://images.sendyit.com/web_platform/vendor_type/top/2.svg', anchor: new Microsoft.Maps.Point(val)}*/});
+            mapItem.entities.push(pushpinCurrent);
             mapItem.entities.push(new Microsoft.Maps.Polyline(linePath,{strokeColor: 'red', strokeThickness:5}));
-        }        
+            mapItem.setView({center: val, zoom: 15});
+        }else{
+            mapItem.setView({center: val, zoom: 15});
+        }      
         await sleep(5000);
+        pushpinCurrent.setOptions({visible:false});
     }    
 }
 function GetMap()
@@ -34,15 +41,11 @@ function GetMap()
             new Microsoft.Maps.Location(-1.291844,36.779049),
             new Microsoft.Maps.Location(-1.291879,36.778389)];
         var startPoint = mapPath[0];
-        var endPoint = mapPath[16];
-        var routline = new Microsoft.Maps.Polyline(mapPath,null);
-        //var mainPath = new Microsoft.Maps.Polyline([new Microsoft.Maps.Location(-1.300355,36.773850),new Microsoft.Maps.Location(-1.300184, 36.776811)],{strokeColor: 'red', strokeThickness:5});
-        //map.entities.push(routline);
-        //map.entities.push(mainPath);
-        var pin = new Microsoft.Maps.Pushpin(startPoint);
-        var pin2 = new Microsoft.Maps.Pushpin(endPoint);
+        var endPoint = mapPath[16];  
+        /* Pushpin Custom Image not loading for some unknown reason */
+        var pin = new Microsoft.Maps.Pushpin(startPoint/*,{icon: 'https://images.sendyit.com/web_platform/vendor_type/top/2.svg', anchor: new Microsoft.Maps.Point(startPoint)}*/);
+        var pin2 = new Microsoft.Maps.Pushpin(endPoint/*,{icon: 'https://images.sendyit.com/web_platform/vendor_type/top/2.svg', anchor: new Microsoft.Maps.Point(endPoint)}*/);
+        map.entities.push(pin);
+        map.entities.push(pin2);
         addPins(mapPath,map); 
-        /*map.entities.push(pin);
-        map.entities.push(pin2);*/
-        map.setView({center: startPoint, zoom: 15});
     }
