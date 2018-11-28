@@ -1,4 +1,18 @@
 //var car = new Microsoft.Maps.Pushpin(map.getCenter(), {htmlcontent:"<img src='https://images.sendyit.com/web_platform/vendor_type/top/2.svg' style="height:2%"/>"})
+function sleep(ms){
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+async function addPins(arrayLocations, mapItem){
+    var linePath = [];
+    for (var [indx, val] of arrayLocations.entries()){
+        mapItem.entities.push(new Microsoft.Maps.Pushpin(val,{icon:'https://images.sendyit.com/web_platform/vendor_type/top/2.svg', anchor: new Microsoft.Maps.Point(val)}));
+        linePath.push(val);
+        if(linePath.length>1){
+            mapItem.entities.push(new Microsoft.Maps.Polyline(linePath,{strokeColor: 'red', strokeThickness:5}));
+        }        
+        await sleep(5000);
+    }    
+}
 function GetMap()
     {        
         var map = new Microsoft.Maps.Map('#mapDiv',{credentials:'Anjy6YOB2TaZMtjxhHU_-i_t2V-ErH1LMNM7pXXK2dqHjSqOfWVyGoWvwe6FJTAk'});
@@ -21,12 +35,13 @@ function GetMap()
             new Microsoft.Maps.Location(-1.291879,36.778389)];
         var startPoint = mapPath[0];
         var endPoint = mapPath[16];
-
+        var routline = new Microsoft.Maps.Polyline(mapPath,null);
+        //var mainPath = new Microsoft.Maps.Polyline([new Microsoft.Maps.Location(-1.300355,36.773850),new Microsoft.Maps.Location(-1.300184, 36.776811)],{strokeColor: 'red', strokeThickness:5});
+        //map.entities.push(routline);
+        //map.entities.push(mainPath);
         var pin = new Microsoft.Maps.Pushpin(startPoint);
         var pin2 = new Microsoft.Maps.Pushpin(endPoint);
-        for (var i = 0; i<mapPath.length;i++){
-            map.entities.push(new Microsoft.Maps.Pushpin(mapPath[i]));
-        }
+        addPins(mapPath,map); 
         /*map.entities.push(pin);
         map.entities.push(pin2);*/
         map.setView({center: startPoint, zoom: 15});
